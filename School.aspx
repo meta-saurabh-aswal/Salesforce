@@ -1,16 +1,29 @@
 public class School
 {
-    //To return all the students of a class with classId argument.
-    public static Map<String, List<Student__c>> studentMap(String classId)
+    //To return a map of all the students with their respective class as key.
+    public static Map<String, Set<Student__c>> getStudentMap()
     {
-        Map<String, List<Student__c>> result = new Map<String, List<Student__c>>();
-        List<Student__c> studentList = new List<Student__c>([SELECT Name FROM Student__c WHERE Class__r.Name = :classId]);
-        result.put(classId, studentList);
-        return result;
+        Map<String, Set<Student__c>> studentMap = new Map<String, Set<Student__c>>();
+        List<Class__c> classList = [SELECT Name FROM Class__c];
+        
+        for(Class__c classId : classList)
+        {
+         	Set<Student__c> studentSet = new Set<Student__c>([SELECT Name FROM Student__c WHERE Class__r.Name = :classId.Name]);
+            studentMap.put(classId.Name, studentSet);
+        }
+        
+        return studentMap;
+    }
+    
+    //To return a List of students in the passed classId.
+    public List<Student__c> getStudentList(String classId)
+    {
+        List<Student__c> studentList = [SELECT Name FROM Student__c WHERE Class__r.Name = :classId];
+        return studentList;
     }
 
     //To calculate working days between two dates (Saturday & Sunday are non-working days).
-    public static void workingDays()
+    public void workingDays()
     {
         Datetime date1 = Datetime.newInstance(2019, 03, 08);
         Datetime date2 = Datetime.newInstance(2019, 04, 08);
@@ -47,7 +60,7 @@ public class School
     }
     
     //To display all sObjects.
-    public static void allSObjects()
+    public void allSObjects()
     {
         Map<String, Schema.SObjectType> allSObj = Schema.getGlobalDescribe();
 		
