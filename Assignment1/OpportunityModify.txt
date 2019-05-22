@@ -1,0 +1,31 @@
+global class OpportunityModify implements Schedulable
+{
+    global void sendMail()
+    {
+        Date currentDate = System.now().date().addDays(-30);
+        System.debug(currentDate);
+        
+        List<user> userList = [select email from user where Id in(select ownerid from Opportunity where LastModifiedDate <= :currentDate)];
+        List<String> mailList = new List<String>();
+        Integer i=0;
+        
+        for(User u :userList)
+        {
+            mailList.add(u.email);
+            
+        }
+
+            Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
+        	String[] address= mailList;
+            email.setSubject('30 day reminder');
+            email.setPlainTextBody('30 days passed, no modification in opportunity');
+        email.setToAddresses(address);
+            Messaging.sendEmail(new Messaging.SingleEmailMessage[]{email});
+    }
+    
+    global void execute(SchedulableContext sc)
+    {
+    	sendMail();
+    }
+
+}
