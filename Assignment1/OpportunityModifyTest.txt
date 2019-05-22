@@ -1,0 +1,12 @@
+@isTest
+public class OpportunityModifyTest
+{
+    public static String cron_exp = '0 0 12 * * ?';
+    
+    static testmethod void testModify()
+    {
+    	Test.startTest();
+    	String jobId = System.schedule('OpportunityModifyTest', cron_exp, new OpportunityModify());
+    	Test.stopTest();
+    }
+}
