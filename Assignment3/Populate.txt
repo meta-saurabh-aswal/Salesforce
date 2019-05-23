@@ -1,0 +1,30 @@
+public class Populate
+{
+    public void updateOfOpportunities(List<Opportunity> opprList)
+    {
+        List<Opportunity> billList = [select id from Opportunity where (BillToContact__c != null AND manager__c = null)];
+        
+        if(billList != null)
+        {
+            List<Contact> contactList = new List<Contact>();
+            
+            for(Opportunity o : billList)
+            {
+                Id billId = o.BillToContact__c;
+                Contact c = [select id from contact where id = :billId].get(0);
+                contactList.add(c);
+            }  
+            
+            List<Contact> accountList = new List<Contact>();
+            for(contact c : contactList)
+            {
+                Contact managerId = [select id from contact where id = :c.id].get(0);
+                Opportunity opp = [select id from Opportunity where opportunity.billToContact__c = :c.id];
+                opp.Manager__c = managerId.accountId;
+                upsert opp;
+            }
+                
+        }
+    }
+
+}
