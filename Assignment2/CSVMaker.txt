@@ -1,0 +1,35 @@
+public class CSVMaker
+{
+    public static void check(String cId)
+    {
+        List<Account> accList = [select id, contactIds__c from Account];
+        
+        
+        for(Account acc :accList)
+        {
+            String line = acc.contactIds__c;
+            
+            if(acc.contactIds__c == null)
+            {
+                List<Contact> conList = [select id from contact where accountid = :acc.id];
+                
+                for(Contact c :conList)
+                {
+                    line += c.Id + ',';	
+                }
+                acc.ContactIDs__c = line;
+            }
+            else
+            {
+                if(!(line.contains(cId)))
+                {
+                    new Contact(id=cId);
+                    line += cId + ',';
+                    acc.ContactIDs__c = line;
+                }
+            }
+            upsert acc;
+        }
+    }
+
+}
