@@ -1,0 +1,9 @@
+@isTest(SeeAllData=true)
+public class CSVMakerTest
+{
+    static testmethod void test()
+    {
+        CSVMaker.check('001xx5');
+    }
+
+}
