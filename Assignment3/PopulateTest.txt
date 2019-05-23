@@ -1,0 +1,10 @@
+@isTest(seeAllData = true)
+public class PopulateTest
+{
+    static testmethod void test()
+    {
+        Populate pop = new Populate();
+    	List<Opportunity> oppr = [select id from Opportunity];
+    	pop.updateOfOpportunities(oppr);
+    }
+}
