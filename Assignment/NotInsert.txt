@@ -1,0 +1,11 @@
+trigger NotInsert on Class__c (before insert)
+{
+    List<Class__C> classList = [select (select id from Students__r) from Class__c where id in: Trigger.new];
+    
+    for(Class__c c: classList)
+    {
+        if(c.MaxLimit__c < c.students__r.size()+1)
+            c.addError('More students than the max limit');
+    }
+
+}

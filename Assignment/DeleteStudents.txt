@@ -1,0 +1,5 @@
+trigger DeleteStudents on Class__c (before insert)
+{
+    delete[select id from Student__c where ClassId__c in (select id from Class__c where custom_status__c = 'Reset')];
+
+}
