@@ -1,0 +1,18 @@
+trigger UpdateCount on Student__c (before insert)
+{
+    List<Id> idList = new List<Id>();
+    
+    for(Student__c s: Trigger.new)
+    {
+        Id classId = s.classId__c;
+        idList.add(classId);      
+    }
+    List<Class__c> classList = [select id, myCount__c from Class__c where id in: idList];
+    
+    for(Class__c c: classList)
+    {
+        c.myCount__c += 1;
+    }
+    update classList;
+
+}

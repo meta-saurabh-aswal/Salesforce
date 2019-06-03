@@ -1,0 +1,14 @@
+trigger NotDelete on Class__c (before delete)
+{
+    List<Class__c> femaleClassList = [select (select id from Students__r where Gender__c = 'Female') from Class__c where id in :Trigger.old];
+    
+    if(femaleClassList.size() > 0)
+    {
+        for(Class__c c : femaleClassList)
+        {
+            if(c.students__r.size() > 1)
+                c.addError('Cannot delete class with more than 1 female students');
+        }
+    }
+
+}

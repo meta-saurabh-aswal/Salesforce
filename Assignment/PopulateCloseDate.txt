@@ -1,0 +1,17 @@
+trigger PopulateCloseDate on Opportunity (before update)
+{
+    Iterator<Opportunity> iNew =  Trigger.new.iterator();
+    Iterator<Opportunity> iOld = Trigger.old.iterator();
+    
+    while(iOld.hasNext() && iNew.hasNext())
+    {
+        Opportunity iNew1 = iNew.next();
+        Opportunity iOld1 = iOld.next();
+        
+        if(iNew1.StageName != iOld1.StageName && (iNew1.StageName == 'Closed Won' || iNew1.StageName == 'Closed Lost') )
+        {
+            iNew1.CloseDate = System.Today();
+        }
+    }
+
+}

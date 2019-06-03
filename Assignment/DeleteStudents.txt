@@ -1,0 +1,18 @@
+trigger DeleteStudents on Class__c (after update)
+{    
+    List<Student__c> studentList = [select id, classId__r.custom_Status__c from Student__c where ClassId__c in (select id from Class__c where custom_status__c = 'Reset' AND id in:Trigger.new)];
+	List<Student__c> studentOldList = [select id, classId__r.custom_Status__c from Student__c where classId__c in(select id from class__c where id in: Trigger.old) AND id in:StudentList];
+    List<Student__c> removeList = new List<Student__c>();
+    
+    for(Student__c stu: studentList)
+    {
+        Integer stuIndex = studentOldList.indexOf(stu);
+        String oldStatus = studentOldList.get(stuIndex).classId__r.custom_status__c;
+       
+        if(stu.classId__r.custom_status__c == oldStatus)
+        {
+            removeList.add(stu);
+        }
+    }
+    delete[select id from student__c where id in:removeList];
+}
