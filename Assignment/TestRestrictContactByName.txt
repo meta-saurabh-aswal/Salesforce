@@ -1,0 +1,42 @@
+@isTest
+public class TestRestrictContactByName
+{
+    @isTest static void testP()
+    {
+        List<Contact> contactList = new List<Contact>();
+        
+        for(Integer i=0; i<10; i+=3)
+        {
+            contactList.add(new Contact(LastName = 'jcb'));
+            contactList.add(new Contact(LastName = 'x'));
+            contactList.add(new Contact(LastName = 'haha'));
+        }
+         Test.startTest();
+        upsert contactList;
+        Test.stopTest();
+    }
+    
+    @isTest static void testN()
+    {
+        List<Contact> contactList = new List<Contact>();
+        Test.startTest();
+        try
+        {
+            for(Integer i=0; i<10; i+=3)
+        	{
+            	contactList.add(new Contact(LastName = 'jcb'));
+            	contactList.add(new Contact(LastName = 'INVALIDNAME'));
+            	contactList.add(new Contact(LastName = 'x'));
+        	}
+        	upsert contactList;
+        }
+        
+        catch(Exception e)
+        {
+            
+        	System.Assert(e.getMessage().contains('The Last Name "INVALIDNAME" is not allowed for DML'));
+        }
+        Test.stopTest();
+    }
+
+}

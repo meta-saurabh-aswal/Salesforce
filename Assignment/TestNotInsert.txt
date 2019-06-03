@@ -1,0 +1,27 @@
+@istest
+public class TestNotInsert
+{
+     @testsetup static void setup()
+    {
+        List<Class__c> classList = new List<Class__c>();
+        for(Integer i=1; i<=5; i++)
+        {
+            classList.add(new Class__c(name='class'+String.valueOf(i), maxLimit__c = i-1));
+            
+        }
+		insert classList;        
+    }
+    
+    
+    
+    @istest static void test1()
+    {
+        List<Class__c> classList = [select id, name, maxLimit__c, myCount__c from class__c];
+        
+    	Student__c stu1 = new Student__c(name = 'stu1', classId__c = classList.get(0).id);
+        insert stu1;
+        Integer c = [select count() from student__c];
+        System.debug(c);
+    }
+
+}

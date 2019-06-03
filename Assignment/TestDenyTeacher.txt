@@ -1,0 +1,44 @@
+@istest
+public class TestDenyTeacher
+{
+    @testsetup static void setup()
+    {
+    	List<Teacher__c> teacherList = new List<Teacher__c>();
+        
+        for(Integer i=1; i<=100; i+=2)
+        {
+            teacherList.add(new Teacher__c(name = 'teacher '+ String.valueOf(i), Subjects__c = 'English'));
+            //teacherList.add(new Teacher__c(name = 'teacher '+ String.valueOf(i), Subjects__c = 'Maths ; Hindi'));
+            //teacherList.add(new Teacher__c(name = 'teacher '+ String.valueOf(i), Subjects__c = 'Hindi'));
+            teacherList.add(new Teacher__c(name = 'teacher '+ String.valueOf(i), Subjects__c = 'Science; Maths'));
+        }
+        insert teacherList;
+    }
+
+    @istest static void testNeg1()
+    {
+        Teacher__c t = new Teacher__c(name = 'teacher 200', Subjects__c = 'Hindi');
+        insert t;
+    }
+    
+    @istest static void testNeg2()
+    {
+        Teacher__c t = new Teacher__c(name = 'teacher 201', Subjects__c = 'English; Hindi');
+        insert t;
+    }
+    
+    @istest static void testPos()
+    {
+        Teacher__c t = new Teacher__c(name = 'teacher 202', Subjects__c = 'English');
+        insert t;
+    }
+    
+    @istest static void testUpdate()
+    {
+		List<Teacher__c> teacherList = [select subjects__c from Teacher__c where subjects__c = 'english'];
+        
+        Teacher__c t = teacherList.get(0);
+        t.Subjects__c = 'Hindi';
+        update t;
+    }
+}
