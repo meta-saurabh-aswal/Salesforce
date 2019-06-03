@@ -1,10 +1,10 @@
 trigger DenyTeacher on Teacher__c (before insert, before update)
 {
-    for(Teacher__c t: Trigger.new)
+    for(Teacher__c teacher: Trigger.new)
     {
-        if(t.subjects__c.contains('Hindi'))
+        if(teacher.subjects__c.contains('Hindi'))
         {
-            t.addError(t.Name + '\tTeacher not allowed to teach hindi');
+            teacher.addError(teacher.Name + '\tTeacher not allowed to teach hindi');
         }
     }
     
