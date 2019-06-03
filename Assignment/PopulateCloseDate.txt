@@ -5,10 +5,10 @@ trigger PopulateCloseDate on Opportunity (before update)
     
     while(iOld.hasNext() && iNew.hasNext())
     {
-        Opportunity iNew1 = (Opportunity)iNew;
-        Opportunity iOld1 = (Opportunity)iOld;
+        Opportunity iNew1 = iNew.next();
+        Opportunity iOld1 = iOld.next();
         
-        if((iNew1.StageName == 'Closed Won' || iNew1.StageName == 'Closed Lost') && iNew1.StageName == iOld1.StageName)
+        if(iNew1.StageName != iOld1.StageName && (iNew1.StageName == 'Closed Won' || iNew1.StageName == 'Closed Lost') )
         {
             iNew1.CloseDate = System.Today();
         }
