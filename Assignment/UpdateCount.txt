@@ -1,23 +1,18 @@
-trigger UpdateCount on Student__c (after insert, after update)
+trigger UpdateCount on Student__c (before insert)
 {
-    List<Student__c> stuList = [select id, classId__c, classId__r.MyCount__c from student__c where id in :Trigger.new];
-    Map<Id, Integer> classMap = new Map<Id, Integer>();
+    List<Id> idList = new List<Id>();
     
-    for(Student__c s: stuList)
+    for(Student__c s: Trigger.new)
     {
-        if(Trigger.isInsert || Trigger.isUpdate)
-    	{
-            Integer count = (Integer)s.classId__r.MyCount__c++;
-            classMap.put(s.classId__c, count);
-        }        
+        Id classId = s.classId__c;
+        idList.add(classId);      
     }
-    List<Class__c> classList = new List<Class__c>();
-    //[select id from Class__c where id in: classMap.keySet()];
+    List<Class__c> classList = [select id, myCount__c from Class__c where id in: idList];
     
-    for(Id i: classMap.keySet())
+    for(Class__c c: classList)
     {
-        classList.add(new Class__c(id = i, MyCount__c = classMap.get(i)));
+        c.myCount__c += 1;
     }
-    upsert classList;
+    update classList;
 
 }
