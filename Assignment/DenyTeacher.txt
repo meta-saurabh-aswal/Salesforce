@@ -4,7 +4,7 @@ trigger DenyTeacher on Teacher__c (before insert, before update)
     {
         if(t.subjects__c.contains('Hindi'))
         {
-            t.addError(t.Name + '\tTeaher cannot teach hindi');
+            t.addError(t.Name + '\tTeacher not allowed to teach hindi');
         }
     }
     
