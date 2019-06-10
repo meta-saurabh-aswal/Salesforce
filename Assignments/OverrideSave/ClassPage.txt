@@ -1,0 +1,13 @@
+<apex:page standardController="Class__c" lightningStylesheets="true">
+    <apex:form >
+        <apex:pageBlock title="Class details">
+            <apex:pageBlockSection >
+                <apex:inputField value="{!Class__c.name}"/>
+                <apex:inputField value="{!Class__c.Size__c}"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockButtons location="bottom">
+                <apex:commandButton value="Save class" action="{!save}"/>
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

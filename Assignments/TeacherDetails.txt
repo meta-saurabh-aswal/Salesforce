@@ -1,0 +1,19 @@
+<apex:page standardController="Contact">
+    <apex:form >
+    <apex:pageBlock title="Teacher Details">
+        
+        <apex:pageBlockButtons location="top">
+            <apex:commandButton value="Edit" action="{! edit}"/>
+            <apex:commandButton value="Delete" action="{! delete}"/>
+            <apex:commandButton value="Clone" action="{!URLFOR($Action.Contact.Clone,Contact.id)}"/>
+        </apex:pageBlockButtons>
+        
+        <apex:pageBlockSection >
+            <apex:outputText value="{!Contact.recordType.name}" label="" style="font-weight: bold; text-align:center"/>
+        </apex:pageBlockSection>
+       
+      
+    </apex:pageBlock>
+    </apex:form> 
+    
+</apex:page>

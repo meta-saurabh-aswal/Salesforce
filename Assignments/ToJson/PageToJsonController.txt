@@ -1,0 +1,15 @@
+public class PageToJsonController
+{
+    public String accountName {get; set;}
+    public String serializedAccount {get; set;}
+    
+    public void makeJson()
+    {
+        Account acc = [SELECT Name , Phone FROM Account 
+                       WHERE name = :accountName];
+        
+        String jsonString = JSON.serialize(acc);
+        serializedAccount = jsonString;        
+    }
+
+}

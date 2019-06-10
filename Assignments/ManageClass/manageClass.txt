@@ -1,0 +1,32 @@
+<apex:page controller="manageClassController" lightningStylesheets="true">
+    <apex:form >
+        <apex:pageBlock title="All Classes" id="displayRegion">
+            <apex:pageBlockTable value="{!classes}" var="cls">
+                <apex:column >
+                     <apex:commandLink value="Edit" action="{!editClass}" reRender="editRegion">
+                    <apex:param name="selectedId" value="{!cls.id}" assignTo="{! classTobeEditedId}"/>
+                     </apex:commandLink>
+
+                </apex:column>
+                
+                <apex:column value="{! cls.Name}"/>
+                <apex:column value="{! cls.Size__c}"/>
+            </apex:pageBlockTable>
+        </apex:pageBlock>
+    </apex:form>
+    
+	<apex:form >
+    <apex:pageBlock id="editRegion" >
+            <apex:pageBlockButtons rendered="{! showEditRegion}">
+                <apex:commandButton value="Update" action="{! updateClass}" reRender="editRegion,displayRegion" />
+                <apex:commandButton value="cancel" action="{! cancelUpdate}" reRender="editRegion"/>
+     </apex:pageBlockButtons>
+        
+        <apex:pageBlockSection title="Edit Class" collapsible="false" rendered="{! showEditRegion}">
+                <apex:inputField label="Name" value="{! classToUpdate.Name}"/>
+                <apex:inputField label="Size" value="{! classToUpdate.Size__c}"/>
+            
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+      </apex:form>  
+</apex:page>

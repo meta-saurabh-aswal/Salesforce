@@ -1,0 +1,37 @@
+public class manageClassController
+{
+    public Id classTobeEditedId {get; set;}
+    public boolean showEditRegion { get; set;}
+    public Class__c classToUpdate { get;set;}
+    
+    public manageClassController()
+    {
+        showEditRegion = False;
+    }
+    
+    public List<Class__c> getClasses()
+    {
+         List<Class__c> classList = [SELECT Name , size__c FROM Class__c];
+        return classList;
+    }
+    
+    public void editClass()
+    {
+		
+        classToUpdate = [SELECT Name , Size__c FROM Class__c WHERE Id = :classTobeEditedId];
+        showEditRegion=True;
+
+    }
+    
+    public void updateClass()
+    {
+        update classToUpdate;
+        showEditRegion=False;
+    }
+
+    public void cancelUpdate()
+    {
+		classToUpdate = null;
+        showEditRegion=False;
+    }
+}

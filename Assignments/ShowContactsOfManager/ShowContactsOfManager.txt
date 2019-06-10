@@ -1,0 +1,20 @@
+<apex:page controller="ShowContactsOfManagerController">
+    <apex:form >
+        
+    <apex:pageBlock title="Contacts related to the account">
+        <apex:outputText >Manager: {! opportunityToBeProcessed.Manager__r.Name}</apex:outputText><br/>
+        
+            <apex:selectRadio value="{!selectedContact}">
+                
+                <apex:selectOptions value="{!options}">
+                </apex:selectOptions>
+                
+            </apex:selectRadio><br/>
+        
+            <apex:commandButton value="Save" action="{!saveAndRedirect}"/>
+            <apex:commandButton value="Clear" action="{!clearAndRedirect}"/>
+            <apex:commandButton value="Cancel" action="{!cancelAndRedirect}"/>
+            
+    </apex:pageBlock>
+    </apex:form>
+</apex:page>

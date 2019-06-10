@@ -1,0 +1,82 @@
+public class SearchingController
+{
+    public String filterState {set;get;}
+    public String filterCountry {set;get;}
+    public String filterCity {get; set;}
+    
+    public ApexPages.StandardSetController setCon
+    {
+        get
+        {
+            if(setCon == null)
+            {
+                String customQuery = '';
+                boolean flag = false;
+                
+                if(!(String.isBlank(filterState)))
+                { 
+                    customQuery += ' billingState =:filterState ';
+                    flag = true;
+                }
+                   
+                 if(!(String.isBlank(filterCountry)))
+                 {
+                     if(flag)
+                         customQuery += ' AND ';
+                     
+                     customQuery += ' billingCountry =:filterCountry ';
+                     flag = true;
+                 }
+                    
+                 if(!(String.isBlank(filterCity)))
+                 {
+                     if(flag)
+                     	customQuery += ' AND ';
+                     
+                     customQuery += ' billingCity =:filterCity';
+                 }
+                
+                List<Account> filteredAccounts = new List<Account>();
+                    
+                    //filteredAccounts = [select name, billingcity, billingcountry, billingstate from Account where billingCity =: filterCity AND billingCountry =: filterCountry AND billingState =:filterState];
+					filteredAccounts = Database.query('select name, billingcity, billingcountry, billingstate from Account where ' + customQuery);					
+                
+                setCon = new ApexPages.StandardSetController(filteredAccounts);
+            	setCon.setPageSize(10);
+            }
+            return setCon;
+        }
+        set ;
+    }
+    
+    public void filterSearch()
+    {
+        this.setCon = null;
+    }
+    
+    public List<Account> getFilteredAccounts()
+    {
+    	return(List<Account>)setCon.getRecords();
+
+    }
+    
+    
+    public Integer getPageSize()
+    {
+        return setCon.getPageSize();
+    }
+    public Integer getPageNumber() {
+        return setCon.getPageNumber();
+    }
+    public Integer getResultSize() {
+        return setCon.getResultSize();
+    }
+    
+    public void next() { setCon.next(); }
+    public void previous() { setCon.previous(); }
+    public void first() { setCon.first(); }
+    public void last() { setCon.last(); }
+    public Boolean getHasNext() { return setCon.getHasNext(); }
+    public Boolean getHasPrevious() { return setCon.getHasPrevious(); }
+
+}

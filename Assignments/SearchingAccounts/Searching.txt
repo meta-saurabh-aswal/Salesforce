@@ -1,0 +1,45 @@
+<apex:page controller="SearchingController">
+    <apex:form >
+    <apex:pageBlock title="Account Search">
+        <apex:pageBlockSection >
+            <apex:inputText value="{!filterCity}" label="Billing City"/>
+            <apex:inputText value="{!filterState}" label="Billing State"/>
+            <apex:inputText value="{!filterCountry}" label="Billing Country"/>
+
+        </apex:pageBlockSection>
+         <apex:pageBlockButtons location="bottom">
+            <apex:commandButton value="Search" action="{! filterSearch}" reRender="displayList"/>
+        </apex:pageBlockButtons>
+        </apex:pageBlock>
+        <apex:pageBlock >
+        <apex:pageBlockSection id="displayList" title="result">
+            <apex:pageBlockTable value="{! filteredAccounts}" var="acc" width="100%">
+                <apex:column value="{!acc.name}"/>
+                <apex:column value="{!acc.billingcity}"/>
+                <apex:column value="{!acc.billingstate}"/>
+                <apex:column value="{!acc.billingcountry}"/>
+            
+            </apex:pageBlockTable>
+        
+        </apex:pageBlockSection>
+        <apex:outputPanel >
+            <apex:commandLink action="{! first}" value="First" rendered="{! hasPrevious }" reRender="displayList"/>
+            
+                        <apex:outputText value="First" rendered="{! NOT(hasPrevious)}"/>
+            
+                        <apex:commandLink action="{! previous}" value="« Previous" rendered="{! hasPrevious}" reRender="displayList" />
+            
+                        <apex:outputText value="« Previous" rendered="{! NOT(hasPrevious)}"/>
+            
+                        <apex:commandLink action="{! Next}" value="Next »" rendered="{! hasNext }" reRender="displayList"/>
+            
+                        <apex:outputText value="Next »" rendered="{! NOT(hasNext) }"/>
+            
+                        <apex:commandLink action="{! last}" value="Last" rendered="{! hasNext}" reRender="displayList"/>
+            
+                        <apex:outputText value="Last" rendered="{! NOT(hasNext) }"/>
+        
+        </apex:outputPanel>
+    </apex:pageBlock>
+    </apex:form>
+</apex:page>

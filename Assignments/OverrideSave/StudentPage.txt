@@ -1,0 +1,12 @@
+<apex:page standardController="Student__c" lightningStylesheets="true">
+    <apex:form >
+        <apex:pageBlock title="Student details">
+            <apex:pageBlockSection >
+                <apex:inputField value="{!Student__c.Name}"/> 
+                <apex:inputField value="{!Student__c.ClassId__c}"/>
+                <apex:inputField value="{!Student__c.Email__c}"/>
+            </apex:pageBlockSection>
+            <apex:commandButton value="Save Student" action="{!save}" />
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

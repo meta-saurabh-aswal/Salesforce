@@ -1,0 +1,10 @@
+<apex:page renderAs="pdf" standardController="Student__c">
+    <apex:pageBlock title="Student details">
+        
+        Name: <apex:outputText value="{!Student__c.name}"/><br/>
+        Email: <apex:outputText value="{!Student__c.Email__c}"/><br/>
+        Class: <apex:outputText value="{!Student__c.ClassId__r.Name}"/><br/>
+        
+    </apex:pageBlock>
+    
+</apex:page>
