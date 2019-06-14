@@ -1,0 +1,98 @@
+<apex:page controller="ShoppingCartVfController" lightningStylesheets="true">
+    <apex:form >
+               
+        <apex:outputPanel id="History" rendered="{! displayHistory}">
+            <apex:pageBlock title="Purchase History">
+                
+                <apex:pageBlockTable value="{! history}" var="hist">
+                    
+                    <apex:column value="{! hist.Productid__r.name}"/>
+                    <apex:column value="{! hist.Productid__r.productCode}"/>
+                    <apex:column value="{! hist.Productid__r.price__c}"/>
+                    <apex:column value="{! hist.buyQuantity__c}"/>
+                    <apex:column value="{! hist.cost__c}"/>
+                    <apex:column value="{! hist.CheckoutNumber__c}"/>
+                    <apex:column value="{! hist.OrderDate__c}"/>
+                    
+                </apex:pageBlockTable>
+                
+                
+                <apex:outputPanel >
+                    <apex:commandLink action="{! first}" value="First" rendered="{! hasPrevious }" reRender="allItems"/>                
+                    <apex:outputText value="First" rendered="{! NOT(hasPrevious)}"/>
+                    
+                    <apex:commandLink action="{! previous}" value="« Previous" rendered="{! hasPrevious}" reRender="allItems" />                
+                    <apex:outputText value="« Previous" rendered="{! NOT(hasPrevious)}"/>
+                    
+                    <apex:commandLink action="{! Next}" value="Next »" rendered="{! hasNext }" reRender="allItems"/>               
+                    <apex:outputText value="Next »" rendered="{! NOT(hasNext) }"/>
+                    
+                    <apex:commandLink action="{! last}" value="Last" rendered="{! hasNext}" reRender="allItems"/>                
+                    <apex:outputText value="Last" rendered="{! NOT(hasNext) }"/>
+                    
+                </apex:outputPanel>
+            </apex:pageBlock>
+        </apex:outputPanel>
+        
+        <apex:commandButton value="Purchase Items" action="{! showAllItems}" rerender="allItems"/>
+        
+        <apex:outputPanel id="allItems">
+            <apex:pageBlock title="All Items" rendered="{! displayAllItems}">
+                
+                <apex:pageBlockTable value="{! AllProducts}" var="prod" > 
+                    <apex:column >
+                        <apex:inputCheckbox value="{! prod.isSelected}">
+                            <apex:actionsupport event="onChange" action="{! boxSelected}">
+                                <apex:param value="{! prod.isSelected}" assignTo="{! isChecked}"/>
+                                <apex:param value="{! prod.productObj.id}" assignTo="{! wrapperProdId}"/>
+                            </apex:actionsupport>
+                        </apex:inputCheckbox>
+                    </apex:column>
+                    <apex:column value="{! prod.productObj.name}"/>
+                    <apex:column value="{! prod.productObj.productcode}"/>
+                    <apex:column value="{! prod.productObj.quantity__c}"/>
+                    <apex:column value="{! prod.productObj.price__c}"/>
+                    
+                </apex:pageBlockTable> 
+                
+                <apex:commandButton value="Add To Cart" action="{! addItemToOrder}" reRender="allItems, Cart">
+                    
+                </apex:commandButton>
+                
+            </apex:pageBlock> 
+        </apex:outputPanel>
+        
+        <apex:outputPanel id="Cart">
+            
+            <apex:pageBlock title="Shopping Cart" rendered="{! showNewOrder.size != 0}">
+                <apex:pageBlockTable id="cartOrders" value="{! showNewOrder}" var="order">
+                    <apex:column value="{! order.productId__c}"/>
+                    <apex:column value="{! order.cost__c}"/>
+                    
+                    
+                    <apex:column >
+                        <apex:inputText value="{! order.buyQuantity__c}">
+                            <apex:actionsupport event="onchange" rerender="cartOrders, allItems" action="{! editQuantity}">
+                                <apex:param name="SelectedId" assignTo="{! selectedId}" value="{! order.productId__c}"/>
+                            </apex:actionsupport>
+                        </apex:inputText>
+                    </apex:column>
+                    
+                    <apex:column >
+                        <apex:commandLink action="{! deleteItem}" value="Delete" reRender="Cart, allItems"> 
+                            <apex:param assignTo="{! selectedId}" name="selectedId" value="{! order.productId__c}"/>
+                        </apex:commandLink>
+                    </apex:column>
+                    
+                </apex:pageBlockTable> 
+                
+            </apex:pageBlock>
+            
+            <apex:outputPanel >
+            <apex:commandButton value="Checkout" action="{! checkoutOrder}"/>
+            </apex:outputPanel>
+        </apex:outputPanel>
+        
+        
+    </apex:form>
+</apex:page>
