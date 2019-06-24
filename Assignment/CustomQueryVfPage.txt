@@ -1,0 +1,12 @@
+<apex:page controller="CustomQueryVfPageController" lightningStylesheets="true">
+    <apex:pageBlock title="Input the query">
+        <apex:form >
+            <apex:inputTextArea value="{! cQuery}"/>
+            <apex:commandButton value="Submit Query" action="{! execute}" rerender="comp" />
+        </apex:form>
+    </apex:pageBlock> 
+    <apex:pageBlock id="comp" >
+        <c:CustomQueryVfComponent inputQuery="{! cQuery}" />
+    </apex:pageBlock>
+    
+</apex:page>
