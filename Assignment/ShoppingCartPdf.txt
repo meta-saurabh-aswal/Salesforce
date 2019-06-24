@@ -1,15 +1,10 @@
-<apex:page renderAs="pdf" controller="ShoppingCartVfController">
-    
-    <apex:outputPanel >
-        
-        <apex:pageBlock title="Shopping Cart">
-            <apex:pageBlockTable value="{! pdfList}" var="order">
-                <apex:column value="{! order.productId__c}"/>
-                <apex:column value="{! order.checkoutNumber__c}"/>
-                <apex:column value="{! order.cost__c}"/>
+<apex:page renderAs="pdf" controller="ShoppingCartVfController">      
+    <apex:pageBlock title="Shopping Cart">
+        <apex:pageBlockTable value="{! pdfList}" var="order">
+            <apex:column value="{! order.productId__c}"/>
+            <apex:column value="{! order.checkoutNumber__c}"/>
+            <apex:column value="{! order.cost__c}"/>
                 
-            </apex:pageBlockTable> 
-            
-        </apex:pageBlock>
-    </apex:outputPanel>
+        </apex:pageBlockTable>            
+    </apex:pageBlock>
 </apex:page>
