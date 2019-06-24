@@ -1,0 +1,27 @@
+public class StudentDetailPdfController
+{
+    Student__c student;
+    
+    public StudentDetailPdfController(ApexPages.StandardController stdController)  
+    {
+        student = (Student__c)stdController.getRecord();
+        
+    }
+    
+    public PageReference attachPdf()
+    {
+        PageReference pdfPage = new PageReference('/apex/StudentDetailPdf?id='+student.Id);
+        
+        Blob pdfBlob = pdfPage.getContent();
+        Attachment att = new Attachment();
+        att.Body = pdfBlob;
+        att.ParentId = student.id;
+        att.Name='Detail.pdf';
+        insert att;
+        
+        PageReference page = new PageReference('/'+student.Id);
+        page.setRedirect(true);
+        return page;
+    }
+
+}

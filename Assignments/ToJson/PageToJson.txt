@@ -1,0 +1,16 @@
+<apex:page controller="PageToJsonController">
+   
+    <apex:form >
+            <apex:pageBlock >
+                
+                <apex:inputText value="{! AccountName}" label="Account Name: "/><br/>
+                <apex:commandButton value="Convert to JSON" action="{!makeJson}"/>
+                
+            </apex:pageBlock>
+    </apex:form>
+    
+    <p id="result"> 
+        {! serializedAccount}
+    </p>
+
+</apex:page>

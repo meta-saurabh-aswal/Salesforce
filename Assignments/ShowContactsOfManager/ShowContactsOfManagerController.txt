@@ -1,0 +1,57 @@
+public class ShowContactsOfManagerController
+{
+    public Opportunity opportunityToBeProcessed{get; set;}
+    public Id selectedContact {get; set;}
+    public List<SelectOption> options {get;set;}
+    
+    public ShowContactsOfManagerController()
+    {
+        Id opprId = ApexPages.currentPage().getParameters().get('id');
+        
+        this.opportunityToBeProcessed = [SELECT id, BillToContact__c, Manager__c FROM Opportunity WHERE Id = :opprId];
+        
+        this.selectedContact = opportunityToBeProcessed.BillToContact__c;
+        this.getContacts ();
+    }
+    
+    public void getContacts()
+    {
+       List<Contact> contactList = [SELECT Id , Name , Account.Name
+                                             FROM Contact
+                                             WHERE Account.id = :opportunityToBeProcessed.Manager__c];
+        
+        options = new List<SelectOption>();
+        
+        for(Contact con : contactList)
+        {
+            options.add(new SelectOption(con.id, con.Name));
+        }
+    }
+    
+    public PageReference saveAndRedirect()
+    {
+        opportunityToBeProcessed.BillToContact__c = selectedContact;
+        update opportunityToBeProcessed;
+        
+		PageReference page = new PageReference('/'+opportunityToBeProcessed.Id);
+        page.setRedirect(true);
+        return page;
+    }
+
+    public PageReference clearAndRedirect()
+    {
+        opportunityToBeProcessed.BillToContact__c = null;
+        update opportunityToBeProcessed;
+        
+        PageReference page = new PageReference('/'+opportunityToBeProcessed.Id);
+        page.setRedirect(true);
+        return page;
+    }
+    
+    public PageReference cancelAndRedirect()
+    {
+        PageReference page = new PageReference('/'+opportunityToBeProcessed.Id);
+        page.setRedirect(true);
+        return page;
+    }
+}
