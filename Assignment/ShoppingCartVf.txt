@@ -55,9 +55,7 @@
                     
                 </apex:pageBlockTable> 
                 
-                <apex:commandButton value="Add To Cart" action="{! addItemToOrder}" reRender="allItems, Cart">
-                    
-                </apex:commandButton>
+                <apex:commandButton value="Add To Cart" action="{! addItemToOrder}" reRender="allItems, Cart"/>
                 
             </apex:pageBlock> 
         </apex:outputPanel>
