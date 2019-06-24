@@ -1,253 +1,98 @@
-public class ShoppingCartVfController
-{
-    private List<Product2> allProductList {get; set;}
-    private Map<Id, ShoppingCartWrapper> allProductMapWr = new Map<Id, ShoppingCartWrapper>();
-    
-    public boolean displayAllItems {get; set;}
-    public boolean displayHistory {get; set;}
-    public boolean errorMsg {get; set;}
-    
-    public Id currentItemId {get; set;}
-    private Product2 currentItem {get; set;}
-    
-    private List<ProductOrder__c> oldOrderList = new List<ProductOrder__c>();
-    private List<ProductOrder__c> newOrderList = new List<ProductOrder__c>();
-    private Map<id, ProductOrder__c> orderMap = new Map<id, ProductOrder__c>();
-    
-    public Integer editedQuantity {get; set;}
-    
-    public String selectedId {get; set;}
-    //ShoppingHistory__c userHistory;
-    public Integer checkoutNumber;
-    public boolean isChecked {set; get;}
-    public Id wrapperProdId {get; set;}
-    public Map<id, Integer> originalQuant = new Map<id, Integer>();
-    List<product2> updateProductList = new List<product2>();
-    
-    public ShoppingCartVfController()
-    {
-        allProductList = [select id, productCode, name, quantity__c, price__c from product2];
-
-        getAllProducts();
-        getHistory();
+<apex:page controller="ShoppingCartVfController" lightningStylesheets="true">
+    <apex:form >
+        <apex:outputPanel id="History" rendered="{! displayHistory}">
+            <apex:pageBlock title="Purchase History">
+                
+                <apex:pageBlockTable value="{! rec}" var="hist">
+                    
+                    <apex:column value="{! hist.Productid__r.name}"/>
+                    <apex:column value="{! hist.Productid__r.productCode}"/>
+                    <apex:column value="{! hist.Productid__r.price__c}"/>
+                    <apex:column value="{! hist.buyQuantity__c}"/>
+                    <apex:column value="{! hist.cost__c}"/>
+                    <apex:column value="{! hist.CheckoutNumber__c}"/>
+                    <apex:column value="{! hist.OrderDate__c}"/>
+                    
+                </apex:pageBlockTable>
+                
+                
+                <apex:outputPanel >
+                    <apex:commandLink action="{! first}" value="First" rendered="{! hasPrevious }" reRender="History"/>                
+                    <apex:outputText value="First" rendered="{! NOT(hasPrevious)}"/>
+                    
+                    <apex:commandLink action="{! previous}" value="« Previous" rendered="{! hasPrevious}" reRender="History" />                
+                    <apex:outputText value="« Previous" rendered="{! NOT(hasPrevious)}"/>
+                    
+                    <apex:commandLink action="{! Next}" value="Next »" rendered="{! hasNext }" reRender="History"/>               
+                    <apex:outputText value="Next »" rendered="{! NOT(hasNext) }"/>
+                    
+                    <apex:commandLink action="{! last}" value="Last" rendered="{! hasNext}" reRender="History"/>                
+                    <apex:outputText value="Last" rendered="{! NOT(hasNext) }"/>
+                    
+                </apex:outputPanel>
+            </apex:pageBlock>
+        </apex:outputPanel>
         
-        for(Product2 p: allProductList)
-        {
-            originalQuant.put(p.id, (Integer)p.Quantity__c);
-        }
+        <apex:commandButton value="Purchase Items" action="{! showAllItems}" rerender="History"/>
         
-    }
-    
-    public ApexPages.StandardSetController setCon
-    {
-        get
-        {
-            if(setCon == null)
-            {
-                getHistory();
-                setCon = new ApexPages.StandardSetController(oldOrderList);
-                setCon.setPageSize(10);
-            }
-            return setCon;
-        }
-        set ;
-    }
-    
-    public List<ProductOrder__c> getHistory()
-    {
-        oldOrderList = [select id, productId__c, buyQuantity__c, checkoutNumber__c, cost__c, productId__r.price__c, orderDate__c, productId__r.Name, productId__r.productCode from ProductOrder__c ORDER BY checkoutNumber__c DESC NULLS LAST];
-
-        if(oldOrderList.isEmpty())
-        {
-            checkoutNumber = 1;
-  
-            //displayAllItems = true;
-            displayHistory = false;
-            return oldOrderList;
-        }	
-        else
-        {
-            checkoutNumber = (Integer)oldOrderList[0].checkoutNumber__c +1;
-            displayHistory = true;
-            return oldOrderList;
-        }   
+        <apex:outputPanel id="allItems">
+            <apex:pageBlock title="All Items" rendered="{! displayAllItems}">
+                
+                <apex:pageBlockTable value="{! AllProducts}" var="prod" > 
+                    <apex:column >
+                        <apex:inputCheckbox value="{! prod.isSelected}">
+                            <apex:actionsupport event="onChange" action="{! boxSelected}">
+                                <apex:param value="{! prod.isSelected}" assignTo="{! isChecked}"/>
+                                <apex:param value="{! prod.productObj.id}" assignTo="{! wrapperProdId}"/>
+                            </apex:actionsupport>
+                        </apex:inputCheckbox>
+                    </apex:column>
+                    <apex:column value="{! prod.productObj.name}"/>
+                    <apex:column value="{! prod.productObj.productcode}"/>
+                    <apex:column value="{! prod.productObj.quantity__c}"/>
+                    <apex:column value="{! prod.productObj.price__c}"/>
+                    
+                </apex:pageBlockTable> 
+                
+                <apex:commandButton value="Add To Cart" action="{! addItemToOrder}" reRender="allItems, Cart">
+                    
+                </apex:commandButton>
+                
+            </apex:pageBlock> 
+        </apex:outputPanel>
         
-    }
-    
-    //To make current bill pdf
-    public List<productOrder__c> getPdfList()
-    {
-        List<ProductOrder__c> allBillItems = [select id, productId__c, checkoutNumber__c, cost__c, productId__r.price__c, orderDate__c, productId__r.Name, productId__r.productCode from ProductOrder__c ORDER BY checkoutNumber__c DESC NULLS LAST];
-        Integer billNum = (Integer)allBillItems.get(0).checkoutNumber__c;
-        List<ProductOrder__c> billItems = new List<ProductOrder__c>();
-        
-        for(ProductOrder__c po: allBillItems)
-        {
-        	if((Integer)po.CheckoutNumber__c == billNum)
-                billItems.add(po);
-        }
-        return billItems;
-    }
-    
-    public List<ShoppingCartWrapper> getAllProducts()
-    {        
-        for(Product2 p :allProductList)
-        {
-            allProductMapWr.put(p.Id, new ShoppingCartWrapper(p));
-        }
-        //displayAllItems = true;
-        
-        return allProductMapWr.values();
-    }
-    
-    public void ShowAllItems()
-    {
-        System.debug(allProductMapWr.values());
-        displayAllItems = true;
-        System.debug(displayAllItems);
-    }
-    
-    public void mapOrderToProduct(Product2 p)
-    {
-        orderMap.put(p.id, new ProductOrder__c(productId__c = p.id, BuyQuantity__c = 1, cost__c = p.price__c));
-    }
-    
-    public void addItemToOrder()
-    {
-        for(ShoppingCartWrapper s: allProductMapWr.values())
-        {
-            if(s.isSelected)
-            {	
-                if(s.productObj.quantity__c > 0)
-                {	
-                    if(orderMap.containsKey(s.productobj.id))
-                	{
-                    	orderMap.get(s.productobj.id).BuyQuantity__c++;
-                    	s.productObj.quantity__c--;
-                        orderMap.get(s.productobj.id).cost__c *= 2;
-                	}
-                	else
-                	{
-                    	mapOrderToProduct(s.productobj);
-                        s.productObj.quantity__c--;
-                	}
-                }
-                else
-                    ApexPages.addmessage(new ApexPages.message(ApexPages.severity.ERROR,'Item out of stock'));
-            }
-        }
-        
-    }
-    
-    public List<ProductOrder__c> getShowNewOrder()
-    {
-       // System.debug(orderMap.values());
-        return orderMap.values();
-    }
-    
-    public void deleteItem()
-    {
-        System.debug('delete button '+selectedId);
-        product2 product = allProductMapWr.get(selectedId).productObj;
-        productOrder__c order = orderMap.get(selectedId);
-        
-        Integer restoreQuantity = (Integer)order.buyQuantity__c;
-        System.debug(restoreQuantity);
-        orderMap.remove(selectedId);
-        allProductMapWr.get(selectedId).productObj.quantity__c += restoreQuantity;
-    }
-    
-    
-    //Pagination
-    public Integer getPageSize()
-    {
-        return setCon.getPageSize();
-    }
-    public Integer getPageNumber()
-    {
-        return setCon.getPageNumber();
-    }
-    public Integer getResultSize()
-    {
-        return setCon.getResultSize();
-    }
-    
-    public void next() { setCon.next(); }
-    public void previous() { setCon.previous(); }
-    public void first() { setCon.first(); }
-    public void last() { setCon.last(); }
-    public Boolean getHasNext() { return setCon.getHasNext(); }
-    public Boolean getHasPrevious() { return setCon.getHasPrevious(); }
-    
-    
-    
-    //select check
-    public void boxSelected()
-    {  
-        if(!(isChecked))
-        	allProductMapWr.get(wrapperProdId).isSelected = true;
-        else
-            allProductMapWr.get(wrapperProdId).isSelected = false;
-    }
-    
-    //Wrapper for Checkbox
-    public class ShoppingCartWrapper
-    {
-        public Product2 productObj {get; set;}
-        public boolean isSelected {get; set;}
-        public ShoppingCartWrapper(Product2 p)
-        {
-            this.productObj = p;
-            isSelected = false;
-        }
-    }
-    
-    public void editQuantity()
-    {
-        Product2 currentProduct = allProductMapWr.get(selectedId).productObj;
-        editedQuantity = (Integer)orderMap.get(selectedId).buyQuantity__c;
-        
-        if(editedQuantity > originalQuant.get(selectedId))
-        {
-            errorMsg = true;
-            ApexPages.addmessage(new ApexPages.message(ApexPages.severity.ERROR,'Item out of stock'));
-            orderMap.get(selectedId).buyQuantity__c = originalQuant.get(selectedId);
-            currentProduct.Quantity__c = 0;
+        <apex:outputPanel id="Cart">
             
-        }
-        else
-        {
-            currentProduct.Quantity__c = originalQuant.get(selectedId) - editedQuantity;
-        }
+            <apex:pageBlock title="Shopping Cart" rendered="{! showNewOrder.size != 0}">
+                <apex:pageMessages />
+                <apex:pageBlockTable id="cartOrders" value="{! showNewOrder}" var="order">
+                    <apex:column value="{! order.productId__c}"/>
+                    <apex:column value="{! order.cost__c}"/>
+                    
+                    
+                    <apex:column >
+                        <apex:inputText value="{! order.buyQuantity__c}">
+                            <apex:actionsupport event="onchange" rerender="cartOrders, allItems" action="{! editQuantity}">
+                                <apex:param name="SelectedId" assignTo="{! selectedId}" value="{! order.productId__c}"/>
+                            </apex:actionsupport>
+                        </apex:inputText>
+                    </apex:column>
+                    
+                    <apex:column >
+                        <apex:commandLink action="{! deleteItem}" value="Delete" reRender="Cart, allItems"> 
+                            <apex:param assignTo="{! selectedId}" name="selectedId" value="{! order.productId__c}"/>
+                        </apex:commandLink>
+                    </apex:column>
+                    
+                </apex:pageBlockTable> 
+                <apex:pageBlockButtons >
+            <apex:commandButton value="Checkout" action="{! checkoutOrder}"/>
+            </apex:pageBlockButtons>
+            </apex:pageBlock>
+            
+            
+        </apex:outputPanel>
         
-        orderMap.get(selectedId).cost__c = orderMap.get(selectedId).buyQuantity__c * currentProduct.price__c;
-    }
-    
-    public PageReference checkoutOrder()
-    {
-        List<id> productIdList = new List<id>();
-        Date orderDate = System.today();
         
-        for(ProductOrder__c po: orderMap.values())
-        {
-            po.checkoutNumber__c = checkoutNumber;
-            po.orderDate__c = orderDate;
-            productIdList.add(po.ProductId__c);
-        }
-        
-        List<Product2> orderedProducts = [select id, quantity__c from Product2 where id in :productIdList];
-
-		for(product2 p: orderedProducts)
-        {
-            p.Quantity__c = allProductMapWr.get(p.id).productObj.quantity__c;
-        }
-        
-        insert orderMap.values();
-        update orderedProducts;
-        
-        PageReference pdfPage = new PageReference('/apex/ShoppingCartPdf');
-        pdfPage.setRedirect(true);
-        return pdfPage;
-    }
-    
-}
+    </apex:form>
+</apex:page>
