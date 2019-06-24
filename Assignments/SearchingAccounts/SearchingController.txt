@@ -15,7 +15,7 @@ public class SearchingController
                 
                 if(!(String.isBlank(filterState)))
                 { 
-                    customQuery += ' billingState =:filterState ';
+                    customQuery += ' WHERE billingState =:filterState ';
                     flag = true;
                 }
                    
@@ -23,7 +23,9 @@ public class SearchingController
                  {
                      if(flag)
                          customQuery += ' AND ';
-                     
+                     else
+		     	customQuery += ' WHERE ';
+			
                      customQuery += ' billingCountry =:filterCountry ';
                      flag = true;
                  }
@@ -32,14 +34,16 @@ public class SearchingController
                  {
                      if(flag)
                      	customQuery += ' AND ';
-                     
+                     else
+		     	customQuery += ' WHERE ';
+			
                      customQuery += ' billingCity =:filterCity';
                  }
                 
                 List<Account> filteredAccounts = new List<Account>();
                     
                     //filteredAccounts = [select name, billingcity, billingcountry, billingstate from Account where billingCity =: filterCity AND billingCountry =: filterCountry AND billingState =:filterState];
-					filteredAccounts = Database.query('select name, billingcity, billingcountry, billingstate from Account where ' + customQuery);					
+					filteredAccounts = Database.query('select name, billingcity, billingcountry, billingstate from Account ' + customQuery);					
                 
                 setCon = new ApexPages.StandardSetController(filteredAccounts);
             	setCon.setPageSize(10);
