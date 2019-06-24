@@ -1,0 +1,22 @@
+@isTest
+public class TestClosedOpportunityTrigger
+{
+    @istest static void testP()
+    {
+        Date d = Date.newInstance(2019, 3, 2);
+        Opportunity opp = new Opportunity(Name = 'jcb', closeDate = d, StageName = 'Closed Won');
+        insert opp;
+        Task task = [select whatId from Task].get(0);
+        System.assertEquals(opp.id, task.whatId);
+    }
+    
+    @istest static void testN()
+    {
+        Date d = Date.newInstance(2019, 3, 2);
+        Opportunity opp = new Opportunity(Name = 'jcb', closeDate = d, StageName = 'Closed Lost');
+        insert opp;
+        //Task task = [select whatId from Task].get(0);
+        System.assertEquals(0, [select whatId from Task].size());
+    }
+
+}

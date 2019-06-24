@@ -1,0 +1,20 @@
+@istest
+public class TestNotDelete
+{
+	@istest static void test1()
+    {
+        Class__c class1 = new Class__c(name = 'class1');
+        insert class1;
+        
+        Student__c s1 = new Student__c(Name = 'stu1', classId__c = class1.Id, Gender__c = 'Female');
+        Student__c s2 = new Student__c(Name = 'stu2', classId__c = class1.Id, Gender__c = 'Female');
+        insert s1;
+        insert s2;
+        System.debug([select id, name, classId__c from student__c]);
+        
+        delete[select id from class__c where name = 'class1'];
+        System.debug([select id, name from class__c]);
+    }
+    
+
+}

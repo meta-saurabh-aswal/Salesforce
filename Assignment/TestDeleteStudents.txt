@@ -1,0 +1,59 @@
+@istest
+public class TestDeleteStudents
+{    
+    @testsetup static void setup()
+    {
+        Class__c class0 = new Class__c(Name = 'class0', custom_status__c = 'New');
+        insert class0;
+        Student__c stu0 = new Student__c(Name = 'stu0', classId__c = class0.Id);
+        insert stu0;
+        
+        Class__c class010 = new Class__c(Name = 'class010', custom_status__c = 'Reset');
+        insert class010;
+        Student__c stu010 = new Student__c(Name = 'stu010', classId__c = class010.Id);
+        insert stu010;
+    }
+    
+    @istest static void testDelete()
+    {
+    	Class__c class1 = new Class__c(Name = 'class1', custom_status__c = 'New');
+        insert class1;
+        
+        Student__c stu1 = new Student__c(Name = 'stu1', classId__c = class1.Id);
+        insert stu1;
+        
+        Integer c = [Select Count() from Student__C where ClassId__c =:class1.Id ];
+        System.assertEquals(1, c);
+    }
+
+    @istest static void testNotDeleted()
+    {
+        Class__c class1 = new Class__c(Name = 'class1', custom_status__c = 'New');
+        insert class1;
+        
+        Student__c stu1 = new Student__c(Name = 'stu1', classId__c = class1.Id);
+        insert stu1;
+        Integer c = [Select Count() from Student__C where ClassId__c =:class1.Id ];
+        System.assertEquals(1, c);
+        
+        class1.Custom_Status__c = 'Reset';
+        update class1;
+        
+        c = [Select Count() from Student__C where ClassId__c =:class1.Id ];
+        System.assertEquals(0, c);
+        
+    }
+    
+    @istest static void testOtherFieldChanged()
+    {
+        Class__c updateClass = [select id, name from class__c where name = 'class0'].get(0);
+        updateClass.name = 'class0changed';
+        Student__c stu1 = new Student__c(Name = 'stu1', classId__c = updateClass.Id);
+        insert stu1;        
+        update updateClass;
+        
+        Integer c = [Select Count() from Student__c where ClassId__c =:updateCLass.Id ];
+        System.assertEquals(2, c);
+     
+    }
+}

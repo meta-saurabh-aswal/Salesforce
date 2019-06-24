@@ -1,0 +1,34 @@
+@istest
+public class TestPopulateCloseDate
+{
+    @testSetup static void setup()
+    {
+        List<Opportunity> opprList = new List<Opportunity>();
+        
+        for(Integer i=1; i<=21; i+=3)
+        {
+            opprList.add(new Opportunity(Name = 'opp'+String.valueOf(i), StageName = 'Closed Won', CloseDate = Date.newInstance(2016, 5, 3)));
+            opprList.add(new Opportunity(Name = 'opp'+String.valueOf(i), StageName = 'Closed Lost', CloseDate = Date.newInstance(2108, 4, 5)));
+            opprList.add(new Opportunity(Name = 'opp'+String.valueOf(i), StageName = 'Prospecting', CloseDate = Date.newInstance(2107, 7, 6)));
+            
+        }
+        insert opprList;
+    }
+    
+    @isTest static void testAll(){
+        List<Opportunity> opprList2 = [select stageName from opportunity limit : 10];
+        
+        for(Opportunity o: opprList2)
+        {
+            o.stageName = 'Closed Won';
+        }
+        update opprList2;      
+        List<Opportunity> opprList3 = [select closeDate from opportunity];
+        for(Opportunity o: opprList3)
+        {
+            System.debug(o.CloseDate);
+        }
+        
+    }
+
+}

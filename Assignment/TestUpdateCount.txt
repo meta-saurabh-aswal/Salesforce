@@ -1,0 +1,33 @@
+@isTest
+public class TestUpdateCount
+{
+    @testsetup static void setup()
+    {
+        List<Class__c> classList = new List<Class__c>();
+       
+        
+        for(Integer i=1; i<=10; i++)
+        {
+            Class__c unitClass = new class__c(name = 'class'+ String.valueOf(i), MyCount__c = 0);
+            classList.add(unitClass);         
+        }
+        insert classList;     
+    }
+    
+    @istest static void testPositive()
+    {
+        List<Class__c> classList = [select id, mycount__c from Class__c];
+         List<Student__c> studList = new List<Student__c>();
+        
+        Student__c s = new Student__c(name = 'student 1', classId__c = classList.get(1).id);
+        insert s;
+        System.assertEquals(1, [select mycount__c from class__c].get(1).myCount__c);
+
+        for(Class__c c: [select mycount__c from class__c])
+        {
+            System.debug(c.myCount__c);
+        }
+       
+    }
+
+}
