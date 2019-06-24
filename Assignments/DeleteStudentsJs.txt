@@ -1,0 +1,46 @@
+<apex:page standardController="Student__c" recordSetVar="students">
+    <script src="/soap/ajax/45.0/connection.js"></script>
+    <script>
+        sforce.connection.sessionId = '{! $Api.Session_ID }';
+    
+    var stuList = new Array();
+    <apex:repeat value="{! selected}" var="student">
+        stuList.push('{!student}');
+    </apex:repeat>
+    
+    function deleteStudents()
+    {
+        sforce.connection.deleteIds([stuList], {onSuccess: success, onFailure: failure});        
+        
+        function success(result)
+        {
+            window.location="/a00?fcf=00B0o00000Dqr5EEAR";
+        }
+        
+        function failure(error)
+        {
+            alert('An error occured ' + error);    
+        }
+        return false;
+    }
+    
+    function cancel()
+    {
+        window.location = "/a00?fcf=00B0o00000Dqr5EEAR" ;
+    }
+    </script>
+    
+    <apex:form >
+        <apex:pageBlock id="stuTable">
+            <apex:pageBlockTable value="{!selected}" var="stu">
+                <apex:column value="{!stu.name}"/>
+                <apex:column value="{!stu.id}"/>
+            </apex:pageBlockTable>
+            <apex:pageBlockButtons location="bottom">
+                <apex:commandButton value="Delete" onclick="deleteStudents()"/>
+                <apex:commandButton value="Cancel" onclick="cancel()"/>
+            </apex:pageBlockButtons>
+            
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

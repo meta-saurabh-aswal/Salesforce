@@ -1,0 +1,22 @@
+<apex:page standardController="Student__c" lightningStylesheets="true">
+    
+    <script type="text/javascript">
+    function displayMessage()
+    {
+        
+        alert("Hello World!");
+        window.open("/apex/StudentDetailPopup?id={!Student__c.Id}");
+    }
+    
+    </script>
+    <apex:form >
+        <apex:pageBlock title="Student Detail">
+            <apex:detail />
+            
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Show Hello World Alert" onclick="displayMessage()"/>
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>
+    
+</apex:page>

@@ -1,0 +1,47 @@
+<apex:page standardController="Student__c" recordSetVar="students" extensions="StudentDeleteRemoteController">
+    <apex:form >
+        <apex:pageBlock >
+            <apex:pageMessage severity="ERROR" summary="No Records were selected" rendered="{! IF ( selected == NULL , TRUE, FALSE)}"/> 
+            <apex:pageBlockTable value="{! selected}" var="student" rendered="{! IF ( selected == NULL , FALSE, TRUE)}">
+                
+                <apex:column value="{! student.name}"/>
+                <apex:column value="{! student.id}"/>
+                <apex:column value="{! student.ClassId__c}"/>
+            </apex:pageBlockTable>
+            <apex:pageBlockButtons location="bottom">
+                <apex:commandButton value="Delete" onclick="deleteStudents()" rendered="{! IF ( selected == NULL , FALSE, TRUE)}"/>
+                <apex:commandButton value="Cancel" onclick="cancel()"/>
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>
+    
+    <script src="/soap/ajax/45.0/connection.js" type="text/javascript"></script>
+    
+    <script>
+        sforce.connection.sessionId = '{! $Api.Session_ID }';
+    var stuList = new Array();
+    <apex:repeat value="{! selected}" var="student">
+        stuList.push('{!student}');
+    </apex:repeat>
+    
+    function deleteStudents()
+    {
+        Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.StudentDeleteRemoteController.deleteRecords}',stuList,handleResult);
+        
+    }
+    
+    function cancel()
+    {
+        Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.StudentDeleteRemoteController.cancel}',handleResult);
+    }
+    
+    function handleResult(result, event)
+    {
+        if(event.statusCode == 200)
+            log("success");
+        else
+            log("failure");
+    }
+    
+    </script>
+</apex:page>
