@@ -1,10 +1,9 @@
 <apex:page renderAs="pdf" standardController="Student__c">
     <apex:pageBlock title="Student details">
-        
-        <apex:outputText value="{!Student__c.name}" label="Name"/><br/>
-        <apex:outputText value="{!Student__c.Email__c}" label="Email"/><br/>
-        <apex:outputText value="{!Student__c.ClassId__r.Name}" label="Class"/><br/>
-        
-    </apex:pageBlock>
-    
+        <apex:pageBlockSection>
+            <apex:outputText value="{!Student__c.name}" label="Name"/><br/>
+            <apex:outputText value="{!Student__c.Email__c}" label="Email"/><br/>
+            <apex:outputText value="{!Student__c.ClassId__r.Name}" label="Class"/><br/>
+        </apex:pageBlockSection>
+    </apex:pageBlock>    
 </apex:page>
