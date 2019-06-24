@@ -1,0 +1,10 @@
+public class CustomQueryVfPageController
+{
+    public static String cQuery {get; set;}
+    
+    public PageReference execute()
+    {
+        return null;
+    }
+
+}

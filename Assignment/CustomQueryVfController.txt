@@ -1,0 +1,75 @@
+public class CustomQueryVfController
+{
+    public String inputString {get; set;}
+    public String sortOrder {get; set;}
+    public List<sObject> objList = new List<sObject>();
+    public List<String> fieldList {get; set;}
+    public String copyQ = '';
+    
+    public ApexPages.StandardSetController setCon
+    {        
+        get
+        {   
+            copyQuery();
+            System.debug(inputString);
+            setCon = null;
+            
+            if(setCon == null)
+            {       
+                if(inputString != null)
+                {                
+                    setCon = new ApexPages.StandardSetController(Database.Query(inputString));
+                    setCon.setPageSize(10);
+                }
+                else
+                    setCon = new ApexPages.StandardSetController(new List<Account>());
+            }
+            return setCon;
+        }
+        set;
+    }
+    
+    public List<sObject> getList()
+    {   
+        objList = setCon.getRecords();
+        
+        if(objList.isEmpty())
+        {	
+            ApexPages.addMessage(new ApexPages.message(ApexPages.Severity.FATAL, 'No Records Found.'));
+            return new List<Account>();
+        }
+        else
+        {
+            getFields(objList[0]);
+            return objList;
+        }
+    }
+    
+    public void getQuery()
+    {
+        
+        inputString += ' ORDERBY ' + sortOrder;
+        //System.debug(this.inputString + 'getQuery '  +copyQ);
+    }
+    
+    public void getFields(sObject obj)
+    {
+        fieldList = new List<String> (obj.getPopulatedFieldsAsMap().keySet());
+    }
+    
+    public void newSortOrder()
+    {
+        getQuery();
+        getList();
+        //System.debug(inputString + ' newSortOrder ' +copyQ);
+    }
+    
+    public void copyQuery()
+    {
+        if(inputString != null)
+        {
+            copyQ = inputString;
+        }
+        //System.debug(inputString + ' copyQuery ' +copyQ);
+    }
+}

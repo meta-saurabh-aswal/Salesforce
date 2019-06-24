@@ -1,0 +1,33 @@
+<apex:component controller="CustomQueryVfController">
+    <apex:attribute name="inputQuery" description="the input query" type="String" assignTo="{! inputString}"/>
+    
+    <apex:form >
+        <apex:pageBlock title="Records" id="record">
+            <apex:pageBlockTable value="{! list}" var="li">
+                <apex:repeat value="{! fieldList}" var="field"> 
+                    <apex:column value="{! li[field]}">
+                        <apex:facet name="header">
+                            <apex:commandLink action="{! newSortOrder }" reRender="record" value="{! field}">
+                                <apex:param assignTo="{! sortOrder}" name="sortOrder" value="{! field}"/>
+                            </apex:commandLink>
+                        </apex:facet>
+                        
+                    </apex:column>
+                   
+                </apex:repeat>
+            </apex:pageBlockTable>
+        
+        
+        <apex:commandButton action="{! setCon.first}" value="First" rendered="{! setCon.hasPrevious }" reRender="records"/>
+            <apex:commandButton disabled="{! NOT(setCon.hasPrevious) }" value="First" rendered="{! NOT(setCon.hasPrevious)}" />
+            <apex:commandButton action="{! setCon.previous}" value="Previous" rendered="{! setCon.hasPrevious}" reRender="records" />
+            <apex:commandButton value="Previous" disabled="{! NOT(setCon.hasPrevious)}" rendered="{! NOT(setCon.hasPrevious)}"/>
+            <apex:commandButton action="{! setCon.Next}" value="Next" rendered="{! setCon.hasNext }" reRender="records"/>
+            <apex:commandButton value="Next" disabled="{! NOT(setCon.hasNext) }" rendered="{! NOT(setCon.hasNext)}"/>
+            <apex:commandButton action="{! setCon.last}" value="Last"  rendered="{! setCon.hasNext}" reRender="records"/>
+            <apex:commandButton value="Last" disabled="{! NOT(setCon.hasNext) }" rendered="{! NOT(setCon.hasNext)}"/>
+        
+        
+     </apex:pageBlock>     
+    </apex:form>
+</apex:component>
