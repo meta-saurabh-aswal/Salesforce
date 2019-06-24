@@ -1,4 +1,4 @@
-<apex:page controller="ShowContactsOfManagerController">
+<apex:page controller="ShowContactsOfManagerController" lightningStylesheets="true">
     <apex:form >
         
     <apex:pageBlock title="Contacts related to the account">
