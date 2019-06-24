@@ -1,0 +1,29 @@
+public class StudentDeleteRemoteController
+{
+    public StudentDeleteRemoteController(ApexPages.StandardSetController setCon){}
+    
+    @RemoteAction
+    public static PageReference deleteRecords(Id[] stuIdList)
+    {
+        if(stuIdList.size() == 0)
+        {
+            ApexPages.addMessage(new ApexPages.message(ApexPages.Severity.ERROR,'No Records Selected'));
+        }
+        else
+        {
+            List<Database.DeleteResult> result = Database.delete(stuIdList,false);
+        } 
+        
+        PageReference page = new PageReference('/a00?fcf=00B0o00000Dqr5EEAR');
+        page.setRedirect(true);
+        return page;
+    }
+    
+    @RemoteAction
+    public static PageReference cancel()
+    {
+        PageReference page = new PageReference('/a00?fcf=00B0o00000Dqr5EEAR');
+        page.setRedirect(true);
+        return page;
+    }
+}

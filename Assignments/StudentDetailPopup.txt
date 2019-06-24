@@ -1,0 +1,8 @@
+<apex:page standardController="Student__c">
+    <apex:pageBlock >
+        <apex:pageBlockTable value="{!  Student__c.id}" var="stu">
+            <apex:column value="{! student__c.name}"/>
+            <apex:column value="{! student__c.classId__r.name}"/>
+        </apex:pageBlockTable>
+    </apex:pageBlock>
+</apex:page>
