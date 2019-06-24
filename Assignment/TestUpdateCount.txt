@@ -14,7 +14,7 @@ public class TestUpdateCount
         insert classList;     
     }
     
-    @istest static void testP()
+    @istest static void testPositive()
     {
         List<Class__c> classList = [select id, mycount__c from Class__c];
          List<Student__c> studList = new List<Student__c>();
