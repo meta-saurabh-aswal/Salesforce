@@ -1,0 +1,36 @@
+public class OpportunityHandler 
+{
+    public static void onBeforeUpdate(Map<Id, sObject> oldMap, Map<Id, sObject> newMap)
+    {
+        closeDateInit(oldMap, newMap);
+    }
+    
+    public static void onAfterUpdate(Map<Id, sObject> oldMap, Map<Id, sObject> newMap)
+    {
+        checkStageNameChanged(oldMap, newMap);
+    }
+    
+    private static void closeDateInit(Map<Id , sObject> oldMap , Map<Id , sObject> newMap) 
+    {
+      for(Opportunity opp : (List<Opportunity>)newMap.values()) 
+      {
+            if( ((Opportunity)newMap.get(opp.Id)).stageName != ((Opportunity)oldMap.get(opp.Id)).stageName &&
+               'Closed Won'.equals(((Opportunity)newMap.get(opp.Id)).stageName) ||
+               'Closed Lost'.equals(((Opportunity)newMap.get(opp.Id)).stageName))
+            {
+                   opp.CloseDate = Date.today();
+               }
+        }
+    }
+    
+    private static void checkStageNameChanged(Map<Id, sObject> oldMap, Map<Id, sObject> newMap)
+    {
+        for(Opportunity opp : (List<Opportunity>)newMap.values()) 
+        {
+            if(((Opportunity)newMap.get(opp.Id)).stageName != ((Opportunity)oldMap.get(opp.Id)).stageName)
+            {
+                OpportunityEmailHelper.stageChangedEmailTo(opp);
+            }
+        }
+    }
+}

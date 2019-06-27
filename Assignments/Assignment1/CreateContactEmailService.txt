@@ -1,0 +1,93 @@
+public class CreateContactEmailService implements Messaging.InboundEmailHandler
+{
+    public Messaging.InboundEmailResult handleInboundEmail(Messaging.InboundEmail email, Messaging.InboundEnvelope env)
+    {
+        
+        String contactsXML;
+        
+        if(email.textAttachments != null)
+        {
+            for(Messaging.InboundEmail.TextAttachment attachment: email.textAttachments)
+            {
+                if(attachment.fileName == 'Contacts.xml')
+                {
+                    contactsXML = attachment.Body;
+                    break;
+                }
+            }
+            if(!String.isBlank(contactsXML))
+            {
+                
+                readAndInsertContact(contactsXML);
+            }
+        }
+        
+        return null;
+    }
+
+    private void readAndInsertContact(String xmlString)
+    {
+        XMLStreamReader reader = new XMLStreamReader(xmlString);
+        List<Contact> contactList = new List<Contact>();
+        while(reader.hasNext())
+        {
+            System.debug(reader);
+            if(reader.getEventType() == XmlTag.START_ELEMENT && reader.getLocalName() == 'contact')
+            {
+                 contactList.add(createContact(reader));
+            } 
+            else if(reader.getEventType() == XmlTag.END_ELEMENT && reader.getLocalName() == 'Contacts')
+            {
+                break;
+            }
+            reader.next();
+        }
+        if(contactList.size() > 0 ) {
+            insert contactList;
+        }
+    }
+       
+    private Contact createContact(XMLStreamReader reader)
+    {
+        Contact con = new Contact();
+        while(reader.hasNext()) {
+            if(reader.getEventType() == XmlTag.START_ELEMENT && reader.getLocalName() == 'fName')
+            {
+                reader.next();
+                con.firstName = reader.getText();
+            }
+            else if(reader.getEventType() == XmlTag.START_ELEMENT && reader.getLocalName() == 'lName')
+            {
+                reader.next();
+                con.LastName = reader.getText();
+            }
+            else if(reader.getEventType() == XmlTag.START_ELEMENT && reader.getLocalName() == 'accId')
+            {
+                reader.next();
+                con.AccountId = reader.getText();
+            }
+            else if(reader.getEventType() == XmlTag.START_ELEMENT && reader.getLocalName() == 'phone')
+            {
+                reader.next();
+                con.phone = reader.getText();
+            }
+            else if(reader.getEventType() == XmlTag.START_ELEMENT && reader.getLocalName() == 'description')
+            {
+                reader.next();
+                con.description = reader.getText();
+            }
+            else if(reader.getEventType() == XmlTag.START_ELEMENT && reader.getLocalName() == 'email')
+            {
+                reader.next();
+                con.email = reader.getText();
+            }
+            else if(reader.getEventType() == XmlTag.END_ELEMENT && reader.getLocalName() == 'contact')
+            {
+                break;
+            }
+             reader.next();
+        }
+        return con;
+    }
+
+}
