@@ -1,0 +1,102 @@
+@isTest
+public class CreateContactEmailServiceTest
+{
+    
+    @isTest
+    public static void inboundEmail_textAttachment_2_ContactsCreated_Test()
+    {
+        //Given
+        Messaging.InboundEmail inboundEmail = new Messaging.InboundEmail(); 
+        Messaging.InboundEnvelope env = new Messaging.InboundEnvelope();
+        
+        inboundEmail.fromAddress = 'saurabh.aswal@metacube.com';
+        
+        Messaging.InboundEmail.TextAttachment textAttachment = new Messaging.InboundEmail.TextAttachment();
+        textAttachment.fileName = 'Contacts.XML';
+        textAttachment.body = ('<contacts>' +'<contact><fname>Fname1</fname><lname>lname</lname></contact>'+'<contact><fname>Fname2</fname><lname>lname2</lname></contact></contacts>');
+        textAttachment.mimeTypeSubType = 'text/plain';
+        inboundEmail.textAttachments =   new Messaging.inboundEmail.TextAttachment[] { textAttachment };
+            
+        CreateContactEmailService testMail = new CreateContactEmailService();
+        testMail.handleInboundEmail(inboundEmail,env);
+
+        List<Contact> contactList = [SELECT FirstName, LastName FROM Contact];
+        System.assert(contactList.size() == 2);        
+         
+    }
+    
+    @isTest
+    public static void inboundEmail_textAttachment_AllData_1_ContactsCreated_Test()
+    {
+        //Given
+        Messaging.InboundEmail inboundEmail = new Messaging.InboundEmail(); 
+        Messaging.InboundEnvelope env = new Messaging.InboundEnvelope();
+        
+        inboundEmail.fromAddress = 'saurabh.aswal@metacube.com';
+        
+        Messaging.InboundEmail.TextAttachment textAttachment = new Messaging.InboundEmail.TextAttachment();
+        textAttachment.fileName = 'Contacts.XML';
+        textAttachment.body = ('<contacts>' +'<contact>' +
+        								'<fName>FName1</fName>' +
+        								'<lName>LName1</lName>'+
+        								'<accId>0010o00002IlXoTAAV</accId>'+
+        								'<phone>0001145632</phone>'+
+        								'<description>this is The mail</description>' +
+       								     '<email>Fname1@Lname.com</email>'+
+        								'<recordTypeId>0120o000000BA0fAAG</recordTypeId>'+
+    								'</contact>'+
+                               '</contacts>');
+        textAttachment.mimeTypeSubType = 'text/plain';
+        inboundEmail.textAttachments =   new Messaging.inboundEmail.TextAttachment[] { textAttachment };
+
+        CreateContactEmailService testMail = new CreateContactEmailService();
+        testMail.handleInboundEmail(inboundEmail,env);
+
+        List<Contact> contactList = [SELECT FirstName, LastName FROM Contact];
+        System.assert(contactList.size() == 1);        
+         
+    }
+
+    
+    @isTest
+    public static void inboundEmail_NotextAttachment_0_ContactsCreated_Test() {
+        //Given
+        Messaging.InboundEmail inboundEmail = new Messaging.InboundEmail(); 
+        Messaging.InboundEnvelope env = new Messaging.InboundEnvelope();
+        
+        inboundEmail.fromAddress = 'saurabh.aswal@metacube.com';
+
+        CreateContactEmailService testMail = new CreateContactEmailService();
+        testMail.handleInboundEmail(inboundEmail,env);
+
+        List<Contact> contactList = [SELECT FirstName, LastName FROM Contact];
+        System.assert(contactList.size() == 0);        
+        
+    }
+    
+	   
+    @isTest
+    public static void inboundEmail_textAttachmentDifferentName_ContactsCreated_Test() {
+        //Given
+        Messaging.InboundEmail inboundEmail = new Messaging.InboundEmail(); 
+        Messaging.InboundEnvelope env = new Messaging.InboundEnvelope();
+        
+        inboundEmail.fromAddress = 'saurabh.aswal@metacube.com';
+        
+        Messaging.InboundEmail.TextAttachment textAttachment = new Messaging.InboundEmail.TextAttachment();
+        textAttachment.fileName = 'Contact.XML';
+        textAttachment.body = ('<contacts>' +
+                               '<contact><fname>Fname1</fname><lname>lname</lname></contact>'+
+                               '<contact><fname>Fname2</fname><lname>lname2</lname></contact></contacts>');
+        textAttachment.mimeTypeSubType = 'text/plain';
+        inboundEmail.textAttachments =   new Messaging.inboundEmail.TextAttachment[] { textAttachment };
+
+        CreateContactEmailService testMail = new CreateContactEmailService();
+        testMail.handleInboundEmail(inboundEmail,env);
+
+        List<Contact> contactList = [SELECT FirstName, LastName FROM Contact];
+        System.assert(contactList.size() == 0);        
+         
+    }
+    
+}

@@ -1,0 +1,31 @@
+public class OpportunityEmailHelper
+{
+    public static void stageChangedEmailTo(Opportunity opp)
+    {
+        Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
+        
+        
+        String emailId = [SELECT email FROM User Where Id = :opp.OwnerId].email;
+        // dummy contact
+        Contact dummyContact = new Contact();
+        dummyContact.LastName = 'dummy';
+        dummyContact.Email = emailId;
+        insert dummyContact;
+        
+        email.setTargetObjectId(dummyContact.Id);
+        
+        EmailTemplate template = [SELECT Id 
+                                  FROM EmailTemplate 
+                                  WHERE Name ='Opportunity Status Changed' 
+                                  LIMIT 1];
+       
+        
+        email.setTemplateId(template.Id);
+        email.setWhatId(opp.Id);
+        email.setReplyTo('saurabh.aswal@metacube.com');
+        email.setSenderDisplayName('Salesforce Support');
+        email.setSaveAsActivity(false);
+        Messaging.sendEmail(new Messaging.SingleEmailMessage[] {email});
+        delete dummyContact;
+    }
+}

@@ -1,0 +1,94 @@
+@isTest
+public class OpportunityTriggerTest
+{
+    
+    @isTest static void closeDateInitTest()
+    {
+        //Given
+        List<Opportunity> opportunityList = new List<Opportunity>();
+        opportunityList.add(new Opportunity(Name = 'Test Opportunity 1' , 
+                                          stageName = 'Prospecting' ,
+                                          closeDate = Date.today().addDays(7)));
+        opportunityList.add(new Opportunity(Name = 'Test Opportunity 2' , 
+                                          stageName = 'Prospecting' ,
+                                          closeDate = Date.today().addDays(7)));
+        insert opportunityList;
+        List<Opportunity> processedOpportunityList = [SELECT closeDate FROM Opportunity WHERE Id IN :opportunityList];
+        System.assertEquals(Date.today().addDays(7), processedOpportunityList[0].CloseDate);
+        
+        //When 
+        opportunityList[0].StageName = 'Closed Won';
+        update opportunityList;
+        processedOpportunityList = [SELECT closeDate FROM Opportunity WHERE Id IN :opportunityList];
+        
+        //Then
+        System.assertEquals(Date.today(), processedOpportunityList[0].CloseDate);
+        System.assertEquals(Date.today().addDays(7), processedOpportunityList[1].CloseDate);
+    }
+    
+    @isTest static void closeDateInitNoChangeTest()
+    {
+        //Given
+        List<Opportunity> opportunityList = new List<Opportunity>();
+        opportunityList.add(new Opportunity(Name = 'Test Opportunity 1' , 
+                                          stageName = 'Prospecting' ,
+                                          closeDate = Date.today().addDays(7)));
+        opportunityList.add(new Opportunity(Name = 'Test Opportunity 2' , 
+                                          stageName = 'Closed Won' ,
+                                          closeDate = Date.today().addDays(7)));
+        insert opportunityList;
+        List<Opportunity> processedOpportunityList = [SELECT closeDate FROM Opportunity WHERE Id IN :opportunityList];
+        System.assertEquals(Date.today().addDays(7), processedOpportunityList[0].CloseDate);
+        
+        //When
+        opportunityList[1].Name = 'Closed Won';
+        update opportunityList;
+        processedOpportunityList = [SELECT closeDate FROM Opportunity WHERE Id IN :opportunityList];
+        
+        //Then
+        System.assertEquals(Date.today().addDays(7), processedOpportunityList[1].CloseDate);
+    }
+    
+    @isTest
+    static void opportunityStatusChanged_EmailLimitDecreased_Test()
+    {
+        //Given
+        Opportunity opp = new Opportunity(Name = 'Test Opportunity 2',
+                                          stageName = 'Prospecting',
+                                          closeDate = Date.today());
+        insert opp;
+        
+        //When
+        Test.startTest();
+        Integer beforeLimit = Limits.getEmailInvocations();
+        opp.StageName = 'Value Proposition';
+        update opp;
+        Integer afterLimit = Limits.getEmailInvocations();
+        Test.stopTest();
+        
+        //Then
+        System.assertNotEquals(beforeLimit, afterLimit);
+    }
+   
+    @isTest
+    static void opportunityStatusNotChanged_EmailLimitSame_Test()
+    {
+        //Given
+        Opportunity opp = new Opportunity(Name = 'Test Opportunity 2',
+                                          stageName = 'Prospecting',
+                                          closeDate = Date.today());
+        insert opp;
+        
+        //When
+        Test.startTest();
+        Integer beforeLimit = Limits.getEmailInvocations();
+        opp.closeDate = Date.today().addDays(7);
+        update opp;
+        Integer afterLimit = Limits.getEmailInvocations();
+        Test.stopTest();
+        
+        //Then
+        System.assertEquals(beforeLimit, afterLimit);
+    }
+    
+}
