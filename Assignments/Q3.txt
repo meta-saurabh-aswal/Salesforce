@@ -16,31 +16,31 @@ trigger accountLimitExample on Account (after delete, after insert, after update
     //Proactively determine if there are too many Opportunities to update and avoid governor limits
     
     if(Limits.getQueryRows() > Limits.getDmlRows())
-	{
-    	throw new System.LimitException('Too Many Rows');
+    {
+        throw new System.LimitException('Too Many Rows');
     }
-	else
-	{
-    
-    	System.debug('Continue processing. Not going to hit DML governor limits');
+    else
+    {
+        
+        System.debug('Continue processing. Not going to hit DML governor limits');
         System.debug('Going to update ' + opptys.size() + ' opportunities and governor limits will allow ' + (Limits.getLimitDmlRows() - Limits.getDmlRows()));
-    
-    	for(Account a : Trigger.new)
-		{
-        	System.debug('Number of DML statements used so far: ' + Limits.getDmlStatements());
-        	for(Opportunity o: opptys)
-			{
-            	if (o.accountid == a.id)
-                	o.description = 'testing';
+        
+        for(Account a : Trigger.new)
+        {
+            System.debug('Number of DML statements used so far: ' + Limits.getDmlStatements());
+            for(Opportunity o: opptys)
+            {
+                if (o.accountid == a.id)
+                    o.description = 'testing';
             }
-       	}
+        }
+        
+        update opptys;
+        
+        System.debug('Final number of DML statements used so far: ' + Limits.getDmlStatements());
+        
+        System.debug('Final heap size: ' + Limits.getHeapSize());
+        
+    }
     
-    update opptys;
-    
-    System.debug('Final number of DML statements used so far: ' + Limits.getDmlStatements());
-    
-    System.debug('Final heap size: ' + Limits.getHeapSize());
-    
-	}
-
 }
