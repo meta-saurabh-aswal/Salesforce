@@ -1,0 +1,43 @@
+trigger accountTrigger on Account (before delete, before insert, before update) 
+{
+    
+    List<Account> accountList = new List<Account>();
+    if(Trigger.isInsert)
+	{
+        
+    }
+    
+    
+    else if(Trigger.isDelete)
+	{
+        accountList = [SELECT id, (SELECT Id, Name, closedate, stageName FROM Opportunities WHERE stageName = 'Closed Lost' OR stageName = 'Closed Won') 
+                       FROM Account
+                       WHERE Id IN :Trigger.old];
+    }
+    else 
+	{
+        accountList = [SELECT id, (SELECT Id, Name, closedate, stageName FROM Opportunities WHERE stageName = 'Closed Lost' OR stageName = 'Closed Won') 
+                       FROM Account
+                       WHERE Id IN :Trigger.new];
+    }
+    
+    for(Account a : AccountList)
+	{
+        for(Opportunity o: a.Opportunities)
+		{
+            if(o.stageName == 'Closed Won')
+                System.debug('Do more logic here...');
+				
+            if(o.stageName == 'Closed Lost')
+                System.dubug('Do more logic here...');
+        }
+        
+    }   
+}
+
+1. Creating one query to fetch Account with their Opportunities that are closed won/closed lost.
+2. When trigger is delete, using Trigger.old as Trigger.new won't be available.
+3. Rather than iterating through all the Opportunities and then checking if the opportunity is related to current account.
+   we could simply use the sub query to get the list of Opportunities that are related to the particular account.
+4. finally the opportunities can be further processed by if conditions to identify closed won/closed lost.
+5. If the trigger is Insert then we will do nothing as there won't be any id of the records moreover there won't be any opportunity related to it at that time.
